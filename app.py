@@ -27,7 +27,19 @@ def init_db():
 
 @app.route('/')
 def index():
-    return "Tenemos base de datos."
+    try:
+        connection = sqlite3.connect('tareas.db')
+        cursor = connection.cursor()
+
+        # Consultar todas las tareas
+        cursor.execute('SELECT id, title, start_date, status FROM tasks')
+        tasks = cursor.fetchall()
+        connection.close()
+
+        # Pasar las tareas a la plantilla
+        return render_template('index.html', tasks=tasks)
+    except Exception as e:
+        return f"Error al obtener tareas: {e}"
 
 if __name__ == '__main__':
     app.run(debug=True)
